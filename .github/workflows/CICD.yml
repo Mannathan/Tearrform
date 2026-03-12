@@ -44,7 +44,7 @@ jobs:
       - name: Deploy to DEV WebApp
         uses: azure/webapps-deploy@v3
         with:
-          app-name: metech-dev-webapp
+          app-name: metechDevlist-01
           publish-profile: ${{ secrets.DEVAPP }}
           package: app.zip
 
