@@ -1,0 +1,89 @@
+name: CI-CD Azure WebApp
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+
+# -------------------------
+# CI BUILD
+# -------------------------
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Archive Files
+        run: |
+          zip -r app.zip .
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: webapp
+          path: app.zip
+
+# -------------------------
+# DEPLOY DEV
+# -------------------------
+  deploy-dev:
+    needs: build
+    runs-on: ubuntu-latest
+    environment: dev
+
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: webapp
+
+      - name: Deploy to DEV WebApp
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: metech-dev-webapp
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          package: app.zip
+
+# -------------------------
+# DEPLOY STAGE
+# -------------------------
+  deploy-stage:
+    needs: deploy-dev
+    runs-on: ubuntu-latest
+    environment: stage
+
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: webapp
+
+      - name: Deploy to STAGE WebApp
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: metech-stage-webapp
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          package: app.zip
+
+# -------------------------
+# DEPLOY PROD (APPROVAL)
+# -------------------------
+  deploy-prod:
+    needs: deploy-stage
+    runs-on: ubuntu-latest
+    environment: prod
+
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: webapp
+
+      - name: Deploy to PROD WebApp
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: metechprodlisti-01
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          package: app.zip
