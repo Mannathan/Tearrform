@@ -64,8 +64,8 @@ jobs:
       - name: Deploy to STAGE WebApp
         uses: azure/webapps-deploy@v3
         with:
-          app-name: metech-stage-webapp
-          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          app-name: metechprodlisti-01
+          publish-profile: ${{ secrets.METECHPRODLISTI }}
           package: app.zip
 
 # -------------------------
@@ -84,6 +84,6 @@ jobs:
       - name: Deploy to PROD WebApp
         uses: azure/webapps-deploy@v3
         with:
-          app-name: metechprodlisti-01
-          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          app-name: metechprodlisti-09
+          publish-profile: ${{ secrets.METECHPRODLISTI }}
           package: app.zip
